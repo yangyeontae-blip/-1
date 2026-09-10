@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수학 탐험대: 귀여운 나눗셈 모험</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #FF7EB3;
+    --primary-light: #FFE5EE;
+    --secondary: #74B9FF;
+    --accent: #FFD93D;
+    --green: #6BCB77;
+    --card-bg: #FFFFFF;
+    --text-color: #2D3436;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Jua', 'Gaegu', -apple-system, sans-serif;
+  }
+  body {
+    background: linear-gradient(135deg, #FFE5EE 0%, #E3F2FD 50%, #FFFDE7 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: var(--text-color);
+  }
+  .game-container {
+    background: var(--card-bg);
+    border: 6px solid #FFF;
+    border-radius: 35px;
+    box-shadow: 0 15px 35px rgba(255, 126, 179, 0.25);
+    max-width: 620px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 25px 30px;
+    text-align: center;
+  }
+  .header {
+    margin-bottom: 20px;
+  }
+  .title {
+    font-size: 28px;
+    color: #FF5E7E;
+    text-shadow: 2px 2px 0px #FFE5EE;
+    margin-bottom: 12px;
+  }
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8F9FA;
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 2px dashed #DFE6E9;
+  }
+  .lives-box {
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+  .score-box {
+    font-size: 20px;
+    color: #0984E3;
+    font-weight: bold;
+  }
+  .progress-container {
+    width: 100%;
+    background-color: #ECEFF1;
+    border-radius: 15px;
+    height: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 20%;
+    background: linear-gradient(90deg, #FF7EB3, #FFD93D, #6BCB77);
+    border-radius: 15px;
+    transition: width 0.4s ease;
+  }
+  .characters-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .char-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 15px;
+    background: #FFF;
+    border: 2px solid #DFE6E9;
+    transition: all 0.3s ease;
+  }
+  .char-badge.active {
+    border-color: #FF7EB3;
+    background: #FFE5EE;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(255, 126, 179, 0.3);
+  }
+  .story-card {
+    background: #FFF9E6;
+    border: 3px solid #FFEAA7;
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 22px;
+    position: relative;
+    text-align: left;
+  }
+  .speaker-tag {
+    display: inline-block;
+    background: #FF7675;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .story-text {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #2D3436;
+  }
+  .problem-box {
+    background: #F0F7FF;
+    border: 3px solid #74B9FF;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 25px;
+    font-size: 22px;
+    color: #0984E3;
+    font-weight: bold;
+  }
+  .input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 22px;
+  }
+  .input-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+  }
+  .number-input {
+    width: 75px;
+    height: 55px;
+    border-radius: 16px;
+    border: 3px solid #B2BEC3;
+    font-size: 26px;
+    text-align: center;
+    outline: none;
+    background: #FFF;
+    transition: border-color 0.3s;
+  }
+  .number-input:focus {
+    border-color: #FF7EB3;
+    box-shadow: 0 0 10px rgba(255, 126, 179, 0.4);
+  }
+  .btn-submit {
+    background: linear-gradient(135deg, #FF7675, #FF5E7E);
+    color: white;
+    font-size: 22px;
+    padding: 14px 45px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(255, 94, 126, 0.4);
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 94, 126, 0.5);
+  }
+  .btn-submit:active {
+    transform: translateY(2px);
+  }
+  .feedback-box {
+    min-height: 50px;
+    margin-top: 15px;
+    font-size: 19px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .feedback-box.correct {
+    color: #00B894;
+    animation: bounce 0.5s;
+  }
+  .feedback-box.wrong {
+    color: #D63031;
+    animation: shake 0.4s;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 999;
+  }
+  .modal-card {
+    background: white;
+    border-radius: 35px;
+    padding: 35px 25px;
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+  .modal-title {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+  .modal-desc {
+    font-size: 18px;
+    color: #636E72;
+    margin-bottom: 25px;
+    line-height: 1.5;
+  }
+  .btn-restart {
+    background: linear-gradient(135deg, #74B9FF, #0984E3);
+    color: white;
+    font-size: 20px;
+    padding: 12px 35px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #FF7EB3;
+    top: -10px;
+    animation: fall 2.5s linear forwards;
+  }
+  @keyframes fall {
+    to {
+      transform: translateY(600px) rotate(720deg);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="game-container" id="gameContainer">
+  <div class="header">
+    <h1 class="title">🎈 수학 탐험대: 신비의 숲 모험 🎈</h1>
+    <div class="characters-row">
+      <div class="char-badge" id="badge-yoonjun">🦁 이윤준</div>
+      <div class="char-badge" id="badge-sieun">🦉 박시은</div>
+      <div class="char-badge" id="badge-shinbi">🪄 이신비</div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="lives-box" id="livesDisplay">❤️❤️❤️</div>
+    <div class="score-box" id="scoreDisplay">⭐ 점수: 0점</div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="story-card">
+    <div class="speaker-tag" id="speakerName">이윤준 대장</div>
+    <div class="story-text" id="storyText">이야기를 불러오는 중입니다...</div>
+  </div>
+
+  <div class="problem-box" id="problemText">
+    19 ÷ 4 = ?
+  </div>
+
+  <div class="input-group">
+    <div class="input-item">
+      <span>몫:</span>
+      <input type="number" id="quotientInput" class="number-input" placeholder="?" min="0" max="99">
+    </div>
+    <div class="input-item">
+      <span>나머지:</span>
+      <input type="number" id="remainderInput" class="number-input" placeholder="?" min="0" max="99">
+    </div>
+  </div>
+
+  <button class="btn-submit" id="submitBtn" onclick="checkAnswer()">확인하기! ✨</button>
+
+  <div class="feedback-box" id="feedback"></div>
+</div>
+
+<!-- 결과 모달 창 -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle">🎉 모험 성공! 🎉</div>
+    <div class="modal-desc" id="modalDesc">축하합니다!</div>
+    <button class="btn-restart" onclick="restartGame()">다시 도전하기 🔄</button>
+  </div>
+</div>
+
+<script>
+const stages = [
+  {
+    stage: 1,
+    char: "yoonjun",
+    speaker: "🦁 이윤준 대장",
+    story: "숲속 야영지에 도착했어! 탐험 대원 19명이 텐트에 나누어 자려고 해. 텐트 하나에 4명씩 들어간다면, 텐트는 몇 개가 꽉 차고 몇 명이 남을까?",
+    problem: "19 ÷ 4 = 몫 [ ? ] 나머지 [ ? ]",
+    quotient: 4,
+    remainder: 3
+  },
+  {
+    stage: 2,
+    char: "sieun",
+    speaker: "🦉 박시은 전략가",
+    story: "에너지 충전 시간이야! 맛있는 사탕 23개를 주머니 5개에 똑같이 나누어 담으려고 해. 한 주머니에 몇 개씩 들어가고, 몇 개가 남을까?",
+    problem: "23 ÷ 5 = 몫 [ ? ] 나머지 [ ? ]",
+    quotient: 4,
+    remainder: 3
+  },
+  {
+    stage: 3,
+    char: "shinbi",
+    speaker: "🪄 이신비 마법사",
+    story: "빛나는 수정 조각 38개를 6개씩 묶어서 마법 디딤돌을 만들자! 디딤돌은 몇 개 만들어지고, 수정 조각은 몇 개가 남을까?",
+    problem: "38 ÷ 6 = 몫 [ ? ] 나머지 [ ? ]",
+    quotient: 6,
+    remainder: 2
+  },
+  {
+    stage: 4,
+    char: "yoonjun",
+    speaker: "🦁 이윤준 대장",
+    story: "고대 유적 상자에서 황금 동전 45개를 찾았어! 보물 주머니 7개에 똑같이 담으면, 한 주머니에 동전 몇 개씩 들어가고 몇 개가 남을까?",
+    problem: "45 ÷ 7 = 몫 [ ? ] 나머지 [ ? ]",
+    quotient: 6,
+    remainder: 3
+  },
+  {
+    stage: 5,
+    char: "shinbi",
+    speaker: "👑 잠든 숲의 수호 골렘",
+    story: "마지막 관문이다! 거인의 별 열쇠 53개를 수호대원 8명에게 똑같이 나누어 주려고 한다. 한 명당 몇 개씩 받고, 몇 개가 남겠는가?",
+    problem: "53 ÷ 8 = 몫 [ ? ] 나머지 [ ? ]",
+    quotient: 6,
+    remainder: 5
+  }
+];
+
+let currentStage = 0;
+let lives = 3;
+let score = 0;
+
+function updateUI() {
+  const current = stages[currentStage];
+  
+  document.querySelectorAll(".char-badge").forEach(el => el.classList.remove("active"));
+  const activeBadge = document.getElementById("badge-" + current.char);
+  if (activeBadge) activeBadge.classList.add("active");
+
+  let hearts = "";
+  for (let i = 0; i < lives; i++) hearts += "❤️";
+  for (let i = lives; i < 3; i++) hearts += "🤍";
+  document.getElementById("livesDisplay").innerText = hearts;
+  document.getElementById("scoreDisplay").innerText = `⭐ 점수: ${score}점`;
+
+  const percent = ((currentStage + 1) / stages.length) * 100;
+  document.getElementById("progressBar").style.width = percent + "%";
+
+  document.getElementById("speakerName").innerText = current.speaker;
+  document.getElementById("storyText").innerText = current.story;
+  document.getElementById("problemText").innerText = current.problem;
+
+  document.getElementById("quotientInput").value = "";
+  document.getElementById("remainderInput").value = "";
+  document.getElementById("feedback").innerText = "";
+  document.getElementById("feedback").className = "feedback-box";
+  document.getElementById("quotientInput").focus();
+}
+
+function checkAnswer() {
+  const qVal = parseInt(document.getElementById("quotientInput").value);
+  const rVal = parseInt(document.getElementById("remainderInput").value);
+  const feedback = document.getElementById("feedback");
+  const current = stages[currentStage];
+
+  if (isNaN(qVal) || isNaN(rVal)) {
+    feedback.innerText = "몫과 나머지를 모두 숫자로 적어주세요! 😊";
+    feedback.className = "feedback-box wrong";
+    return;
+  }
+
+  if (qVal === current.quotient && rVal === current.remainder) {
+    score += 20;
+    feedback.innerText = "🎉 대단해요! 정확한 정답입니다!";
+    feedback.className = "feedback-box correct";
+    createConfetti();
+
+    if (currentStage === 1 && lives < 3) {
+      lives++;
+      feedback.innerText += " (🪄 신비의 물약으로 목숨 +1!)";
+    }
+
+    currentStage++;
+    document.getElementById("submitBtn").disabled = true;
+
+    setTimeout(() => {
+      document.getElementById("submitBtn").disabled = false;
+      if (currentStage >= stages.length) {
+        showResultModal(true);
+      } else {
+        updateUI();
+      }
+    }, 1200);
+
+  } else {
+    lives--;
+    feedback.className = "feedback-box wrong";
+    
+    if (lives <= 0) {
+      document.getElementById("livesDisplay").innerText = "🤍🤍🤍";
+      feedback.innerText = "💔 아쉽지만 목숨이 모두 소진되었어요!";
+      setTimeout(() => showResultModal(false), 900);
+    } else {
+      feedback.innerText = `💡 앗, 다시 한번 계산해볼까요? (남은 목숨: ${lives}개)`;
+      let hearts = "";
+      for (let i = 0; i < lives; i++) hearts += "❤️";
+      for (let i = lives; i < 3; i++) hearts += "🤍";
+      document.getElementById("livesDisplay").innerText = hearts;
+    }
+  }
+}
+
+function createConfetti() {
+  const container = document.getElementById("gameContainer");
+  const colors = ["#FF7EB3", "#74B9FF", "#FFD93D", "#6BCB77", "#A29BFE"];
+  for (let i = 0; i < 20; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = Math.random() * 90 + "%";
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2500);
+  }
+}
+
+function showResultModal(isWin) {
+  const modal = document.getElementById("resultModal");
+  const title = document.getElementById("modalTitle");
+  const desc = document.getElementById("modalDesc");
+
+  if (isWin) {
+    title.innerText = "🏆 숲의 보물 획득 성공! 🏆";
+    let rank = score >= 100 ? "🌟 S등급 (전설의 나눗셈 마스터)" : "🎖️ A등급 (용감한 나눗셈 탐험가)";
+    desc.innerHTML = `모든 나눗셈 관문을 멋지게 통과했어요!<br><br><b>최종 점수: ${score}점</b><br>칭호: ${rank}`;
+  } else {
+    title.innerText = "😢 탐험 실패... 힘내요!";
+    desc.innerHTML = `목숨이 모두 소진되었어요.<br>다시 도전해서 보물을 찾아볼까요?<br><br><b>최종 점수: ${score}점</b>`;
+  }
+  modal.style.display = "flex";
+}
+
+function restartGame() {
+  currentStage = 0;
+  lives = 3;
+  score = 0;
+  document.getElementById("resultModal").style.display = "none";
+  updateUI();
+}
+
+window.onload = updateUI;
+</script>
+
+</body>
+</html>
